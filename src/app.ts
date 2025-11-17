@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import routes from "@/routes";
 import passport from "passport";
-// import { initializePassport } from "@/strategies/passport";
+import { initializePassport } from "@/services/auth/passport";
 import cookieParser from "cookie-parser";
 
 export const app = express();
@@ -15,7 +15,7 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
-// initializePassport();
+initializePassport();
 app.use(passport.initialize());
 
 app.use("/api", routes);

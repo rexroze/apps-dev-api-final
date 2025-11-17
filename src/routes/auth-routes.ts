@@ -19,7 +19,9 @@ router.post("/v1/refresh-token", authController.refresh);
 router.post("/v1/logout", authMiddleware.execute, authController.logout);
 
 // OAuth (Google & GitHub) Routes
-router.get("/google", passport.authenticate("google", { scope: ["profile", "email"], session: false }));
-router.get("/google/callback", passport.authenticate("google", { session: false, failureRedirect: "/auth/failed" }), authController.OAuthCallback);
+router.get("/v1/google", passport.authenticate("google", { scope: ["profile", "email"], session: false }));
+router.get("/v1/google/callback", passport.authenticate("google", { session: false, failureRedirect: "/auth/failed" }), authController.OAuthCallback);
+router.get("/v1/github", passport.authenticate("github", { scope: ["user:email"], session: false }));
+router.get("/v1/github/callback", passport.authenticate("github", { session: false, failureRedirect: "/auth/failed" }), authController.OAuthCallback);
 
 export default router;

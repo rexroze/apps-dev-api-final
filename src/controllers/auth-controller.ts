@@ -54,4 +54,12 @@ export class AuthController {
     const result = await ResendEmailVerificationService(email);
     return res.status(result.code).json(result);
   }
+
+  // OAuth Callback
+  public async OAuthCallback(req: Request, res: Response) {
+    const oauthResult = (req as any).user;
+    const result = oauthResult ?? { code: 500, status: "error", message: "OAuth authentication failed" };
+    const statusCode = typeof result?.code === "number" ? result.code : 500;
+    return res.status(statusCode).json(result);
+  }
 }
