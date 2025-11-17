@@ -1,0 +1,88 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Enums
+enum Role {
+  USER
+  ADMIN
+}
+
+enum TokenType {
+  REFRESH
+  EMAIL_VERIFY
+  PASSWORD_RESET
+}
+
+// Models
+model User {
+  id               String    @id @default(uuid())
+  email            String?   @unique
+  password         String?
+  name             String?
+  emailVerified    DateTime? @map("email_verified") // @map is custom table name
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  role             Role      @default(USER) // default value from enum Role "USER"
+  tokens           Token[]
+  products         Product[]
+  accounts         Account[]
+}
+
+model Token {
+  id         String     @id @default(uuid())
+  type       TokenType
+  token      String     @unique
+  expiresAt  DateTime
+  createdAt  DateTime   @default(now())
+  consumedAt DateTime?
+  revokedAt  DateTime?
+
+  userId     String
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, type])
+}
+
+model Account {
+  id                 String    @id @default(uuid())
+  userId             String
+  provider           String
+  providerAccountId  String
+  accessToken        String?
+  refreshToken       String?
+  expiresAt          DateTime?
+  tokenType          String?
+  scope              String?
+  idToken            String?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId, provider])
+}
+
+model Product {
+  id          String      @id @default(uuid())
+  userId      String
+  name        String
+  description String
+  price       Int
+  stock       Int
+  image       String
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([id, userId])
+}
