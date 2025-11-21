@@ -31,15 +31,6 @@ export class AuthController {
     return res.status(result.code).json(result);
   }
 
-  // Logout Account
-  public async logout(_req: Request, res: Response) {
-    return res.status(200).json({
-      code: 200,
-      status: "success",
-      message: "Logged out successfully",
-    });
-  }
-
   // Resend Email Verification
   public async resendEmailVerification(req: Request, res: Response) {
     const { email } = req.body ?? {};
