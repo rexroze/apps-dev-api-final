@@ -15,7 +15,7 @@ router.get("/v1/product-active-list", authMiddleware.execute, productController.
 router.post("/v1/product-get-by-id", authMiddleware.execute, productController.getProductById);
 
 // Authenticated & Admin Only Routes
-router.get("/v1/product-list", authMiddleware.execute, adminOnly.execute, productController.getAllProducts);
+router.post("/v1/product-list", authMiddleware.execute, adminOnly.execute, productController.getAllProducts);
 router.post("/v1/product-create", authMiddleware.execute, adminOnly.execute, productController.createProduct);
 router.post("/v1/product-update", authMiddleware.execute, adminOnly.execute, productController.updateProduct);
 router.post("/v1/product-hard-delete", authMiddleware.execute, adminOnly.execute, productController.hardDeleteProduct);

@@ -1,13 +1,11 @@
 import { Router } from "express";
 import passport from "passport";
 import { AuthController } from "@/controllers/auth-controller";
-import { AuthMiddleware } from "@/middlewares/auth-middleware";
 import { exchangeTempToken } from "@/services/auth/temp-token";
 
 // Initialize
 const router = Router();
 const authController = new AuthController();
-const authMiddleware = new AuthMiddleware();
 
 // Authentication Routes
 router.post("/v1/signup", authController.signup);
