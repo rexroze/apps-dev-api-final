@@ -13,14 +13,6 @@ export class AuthController {
   public async verifyEmail(req: Request, res: Response) {
     const token = req.query.token as string;
     const result = await VerifyEmailService(token);
-
-    // Success → redirect to frontend
-    if (result.code === 200) {
-      const redirectURL = process.env.FRONTEND_URL || "http://localhost:3000";
-      // Can use the parameter (emailVerified=success) as an indicator for Frontend Alert
-      return res.redirect(`${redirectURL}?emailVerified=success`);
-    }
-
     return res.status(result.code).json(result);
   }
   
