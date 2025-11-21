@@ -25,8 +25,7 @@ export class AuthController {
 
   // Refresh Token Helps Generate another valid Access Token
   public async refresh(req: Request, res: Response) {
-    const refreshHeader = req.headers["x-refresh-token"];
-    const refreshToken = (Array.isArray(refreshHeader) ? refreshHeader[0] : refreshHeader) ?? req.body?.refreshToken;
+    const { refreshToken } = req.body ?? {};
     const result = await RefreshTokenService(refreshToken);
     return res.status(result.code).json(result);
   }
