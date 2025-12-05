@@ -19,8 +19,18 @@ export class ProductController {
   }
 
   // Get All Active Products
-  async getAllActiveProducts(_req: Request, res: Response) {
-    const result = await GetAllActiveProductsService();
+  async getAllActiveProducts(req: Request, res: Response) {
+    const { search, categoryId } = req.query;
+    const page = req.query.page ? parseInt(String(req.query.page), 10) : undefined;
+    const limit = req.query.limit ? parseInt(String(req.query.limit), 10) : undefined;
+
+    const result = await GetAllActiveProductsService({
+      search: search ? String(search) : undefined,
+      page,
+      limit,
+      categoryId: categoryId ? String(categoryId) : undefined
+    });
+
     return res.status(result.code).json(result);
   }
 

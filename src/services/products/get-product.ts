@@ -24,10 +24,10 @@ export async function GetAllProductsService(userId: string) {
 }
 
 // Get All Active Products (User & Admin)
-export async function GetAllActiveProductsService() {
+export async function GetAllActiveProductsService(options?: { search?: string; page?: number; limit?: number; categoryId?: string }) {
   const productRepository = new ProductRepository();
 
-  const result = await productRepository.findAllActive();
+  const result = await productRepository.findActive(options);
 
   return {
     code: 200,

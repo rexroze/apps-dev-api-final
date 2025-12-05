@@ -84,5 +84,19 @@ model Product {
 
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  categoryId  String?
+  category    Category? @relation(fields: [categoryId], references: [id])
+
   @@index([id, userId])
+  @@index([categoryId])
+}
+
+model Category {
+  id        String    @id @default(uuid())
+  name      String    @unique
+  slug      String?   @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  products  Product[]
 }
