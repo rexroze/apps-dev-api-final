@@ -43,15 +43,12 @@ export class AuthController {
     const oauthResult = (req as any).user;
     const result = oauthResult ?? { code: 500, status: "error", message: "OAuth authentication failed" };
     
-    // Get redirect URL from state parameter (preserved through OAuth flow)
-    // State is base64 encoded redirect URL
-    let redirectUrl: string | undefined;
-    if (req.query.state && typeof req.query.state === 'string') {
-      try {
-        redirectUrl = Buffer.from(req.query.state, 'base64').toString('utf-8');
-      } catch (e) {
-        // If decoding fails, ignore and use fallback
-      }
+    // Get redirect URL from cookie (set before OAuth flow) or fall back to environment variable
+    let redirectUrl = req.cookies?.oauth_redirect as string | undefined;
+    
+    // Clear the cookie after reading
+    if (redirectUrl) {
+      res.clearCookie('oauth_redirect');
     }
     
     // Fall back to environment variable or default
