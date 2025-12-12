@@ -18,4 +18,22 @@ app.use(cookieParser());
 initializePassport();
 app.use(passport.initialize());
 
+// Health check endpoint
+app.get("/", (req, res) => {
+  res.json({
+    status: "success",
+    message: "API is running",
+    version: "1.0.0",
+    endpoints: {
+      auth: "/api/auth",
+      products: "/api/product",
+      categories: "/api/category",
+      cart: "/api/cart",
+      checkout: "/api/checkout",
+      orders: "/api/orders",
+      reviews: "/api/review"
+    }
+  });
+});
+
 app.use("/api", routes);
