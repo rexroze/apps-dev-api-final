@@ -43,15 +43,36 @@ export class AuthController {
     const oauthResult = (req as any).user;
     const result = oauthResult ?? { code: 500, status: "error", message: "OAuth authentication failed" };
     
-    // Get frontend URL from environment
-    const frontendURL = process.env.FRONTEND_URL || 'http://localhost:3000';
+    // Get redirect URL from state parameter (preserved through OAuth flow)
+    // State is base64 encoded redirect URL
+    let redirectUrl: string | undefined;
+    if (req.query.state && typeof req.query.state === 'string') {
+      try {
+        redirectUrl = Buffer.from(req.query.state, 'base64').toString('utf-8');
+      } catch (e) {
+        // If decoding fails, ignore and use fallback
+      }
+    }
+    
+    // Fall back to environment variable or default
+    if (!redirectUrl) {
+      redirectUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    }
+    
+    // Normalize redirect URL - remove trailing slash
+    let frontendURL = redirectUrl.replace(/\/+$/, '');
     const callbackPath = '/oauth-callback';
+    
+    // If redirectUrl doesn't already include the callback path, add it
+    if (!frontendURL.includes('/oauth-callback')) {
+      frontendURL = `${frontendURL}${callbackPath}`;
+    }
     
     if (result.status === 'success' && result.data) {
       // Generate temporary token with all the data
       const tempCode = generateTempToken(result.data);
       
-      return res.redirect(`${frontendURL}${callbackPath}?code=${tempCode}`);
+      return res.redirect(`${frontendURL}?code=${tempCode}`);
     } else {
       // Redirect to frontend with error
       const errorParams = new URLSearchParams({
@@ -60,7 +81,7 @@ export class AuthController {
         code: result.code?.toString() || '500',
       });
       
-      return res.redirect(`${frontendURL}${callbackPath}?${errorParams.toString()}`);
+      return res.redirect(`${frontendURL}?${errorParams.toString()}`);
     }
   }
 }

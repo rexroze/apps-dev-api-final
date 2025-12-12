@@ -15,9 +15,28 @@ router.post("/v1/resend-email-verification", authController.resendEmailVerificat
 router.post("/v1/refresh-token", authController.refresh);
 
 // OAuth (Google & GitHub) Routes
-router.get("/v1/google", passport.authenticate("google", { scope: ["profile", "email"], session: false }));
+// Middleware to capture redirect parameter and pass it through state
+router.get("/v1/google", (req, res, next) => {
+  const redirect = req.query.redirect as string;
+  // Store redirect in state parameter which will be preserved through OAuth flow
+  const state = redirect ? Buffer.from(redirect).toString('base64') : undefined;
+  passport.authenticate("google", { 
+    scope: ["profile", "email"], 
+    session: false,
+    state: state
+  })(req, res, next);
+});
 router.get("/v1/google/callback", passport.authenticate("google", { session: false, failureRedirect: "/auth/failed" }), authController.OAuthCallback);
-router.get("/v1/github", passport.authenticate("github", { scope: ["user:email"], session: false }));
+router.get("/v1/github", (req, res, next) => {
+  const redirect = req.query.redirect as string;
+  // Store redirect in state parameter which will be preserved through OAuth flow
+  const state = redirect ? Buffer.from(redirect).toString('base64') : undefined;
+  passport.authenticate("github", { 
+    scope: ["user:email"], 
+    session: false,
+    state: state
+  })(req, res, next);
+});
 router.get("/v1/github/callback", passport.authenticate("github", { session: false, failureRedirect: "/auth/failed" }), authController.OAuthCallback);
 
 // OAuth Token Exchange Route
