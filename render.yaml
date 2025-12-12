@@ -1,0 +1,53 @@
+services:
+  - type: web
+    name: apps-dev-api-final
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: npm install && npm run build && npx prisma generate
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 8000
+      # Database - Set this in Render dashboard
+      # - key: DATABASE_URL
+      #   value: your_database_url_here
+      # Frontend URL - Update with your Vercel frontend URL
+      # - key: FRONTEND_URL
+      #   value: https://your-frontend.vercel.app
+      # JWT Secrets - Generate strong secrets
+      # - key: JWT_ACCESS_SECRET
+      #   value: your_access_token_secret
+      # - key: JWT_REFRESH_SECRET
+      #   value: your_refresh_token_secret
+      # Email Configuration
+      # - key: EMAIL_HOST
+      #   value: smtp.gmail.com
+      # - key: EMAIL_PORT
+      #   value: 587
+      # - key: EMAIL_USER
+      #   value: your_email@gmail.com
+      # - key: EMAIL_PASS
+      #   value: your_app_password
+      # - key: EMAIL_FROM
+      #   value: noreply@yourapp.com
+      # Google OAuth - Update callback URL to your Render URL
+      # - key: GOOGLE_CLIENT_ID
+      #   value: your_google_client_id
+      # - key: GOOGLE_CLIENT_SECRET
+      #   value: your_google_client_secret
+      # - key: GOOGLE_CALLBACK_URL
+      #   value: https://your-backend.onrender.com/api/auth/v1/google/callback
+      # GitHub OAuth - Update callback URL to your Render URL
+      # - key: GITHUB_CLIENT_ID
+      #   value: your_github_client_id
+      # - key: GITHUB_CLIENT_SECRET
+      #   value: your_github_client_secret
+      # - key: GITHUB_CALLBACK_URL
+      #   value: https://your-backend.onrender.com/api/auth/v1/github/callback
+      # Xendit Payment (Optional)
+      # - key: XENDIT_SECRET_KEY
+      #   value: your_xendit_secret_key
+
