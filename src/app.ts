@@ -32,7 +32,9 @@ app.get("/", (req, res) => {
       checkout: "/api/checkout",
       orders: "/api/orders",
       reviews: "/api/review"
-    }
+    },
+    // Debug: Show FRONTEND_URL (first 20 chars only for security)
+    frontendUrl: process.env.FRONTEND_URL ? `${process.env.FRONTEND_URL.substring(0, 20)}...` : "NOT SET"
   });
 });
 
