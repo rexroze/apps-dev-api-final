@@ -29,7 +29,8 @@ export async function CreateProductService(data: ProductData) {
     description: data.description,
     price: data.price,
     stock: data.stock,
-    image: data.image
+    image: data.image,
+    categoryId: data.categoryId || undefined
   });
 
   return {

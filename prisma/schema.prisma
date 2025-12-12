@@ -33,6 +33,9 @@ model User {
   tokens           Token[]
   products         Product[]
   accounts         Account[]
+  cartItems        CartItem[]
+  orders           Order[]
+  reviews          Review[]
 }
 
 model Token {
@@ -84,6 +87,10 @@ model Product {
 
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  cartItems   CartItem[]
+  orderItems  OrderItem[]
+  reviews     Review[]
+
   categoryId  String?
   category    Category? @relation(fields: [categoryId], references: [id])
 
@@ -99,4 +106,68 @@ model Category {
   updatedAt DateTime  @updatedAt
 
   products  Product[]
+}
+
+// Cart items saved per user so cart persists across devices
+model CartItem {
+  id        String   @id @default(uuid())
+  userId    String
+  productId String
+  quantity  Int
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([productId])
+}
+
+// Orders and order items to track purchases
+model Order {
+  id        String      @id @default(uuid())
+  userId    String
+  total     Int
+  createdAt DateTime    @default(now())
+
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items     OrderItem[]
+
+  @@index([userId])
+}
+
+model OrderItem {
+  id        String   @id @default(uuid())
+  orderId   String
+  productId String
+  quantity  Int
+  price     Int // price at time of purchase
+
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  reviews   Review[]
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+model Review {
+  id         String     @id @default(uuid())
+  userId     String
+  productId  String
+  orderItemId String    // Review specific to an order item
+  rating     Int        // 1-5 stars
+  comment    String?    // Optional review text
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product    Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  orderItem  OrderItem  @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, orderItemId]) // One review per user per order item
+  @@index([productId])
+  @@index([userId])
+  @@index([orderItemId])
+  @@index([rating])
 }

@@ -10,9 +10,9 @@ const productController = new ProductController();
 const authMiddleware = new AuthMiddleware();
 const adminOnly = new RoleMiddleware(Role.ADMIN);
 
-// Authenticated Only - General Roles Can Access
-router.get("/v1/product-active-list", authMiddleware.execute, productController.getAllActiveProducts);
-router.post("/v1/product-get-by-id", authMiddleware.execute, productController.getProductById);
+// Public Routes - No authentication required for browsing
+router.get("/v1/product-active-list", productController.getAllActiveProducts);
+router.post("/v1/product-get-by-id", productController.getProductById);
 
 // Authenticated & Admin Only Routes
 router.post("/v1/product-list", authMiddleware.execute, adminOnly.execute, productController.getAllProducts);

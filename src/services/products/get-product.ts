@@ -1,5 +1,6 @@
 import { UserRepository } from "@/repositories/user-repository";
 import { ProductRepository } from "@/repositories/product-repository";
+import { enrichProductWithStats, enrichProductsWithStats } from "@/utils/product-enrichment";
 
 // Get All Products regardles if Active / Not (Admin Only)
 export async function GetAllProductsService(userId: string) {
@@ -28,12 +29,13 @@ export async function GetAllActiveProductsService(options?: { search?: string; p
   const productRepository = new ProductRepository();
 
   const result = await productRepository.findActive(options);
+  const enriched = await enrichProductsWithStats(result);
 
   return {
     code: 200,
     status: "success",
     message: "Fetched all active products successfully!",
-    data: result
+    data: enriched
   }
 }
 
@@ -52,10 +54,12 @@ export async function GetProductByIdService(id: string) {
     return { code: 400, status: "error", message: "Product is not found!" };
   }
 
+  const enriched = await enrichProductWithStats(existingProduct);
+
   return {
     code: 200,
     status: "success",
     message: "Fetched the product successfully!",
-    data: existingProduct
+    data: enriched
   }
 }

@@ -10,7 +10,20 @@ export class ProductRepository {
   }
 
   async findAllByUser(userId: string) {
-    return await this.prisma.product.findMany({ where: { userId }, orderBy: { name: "asc" } });
+    return await this.prisma.product.findMany({ 
+      where: { userId }, 
+      orderBy: { name: "asc" },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        },
+        category: true
+      }
+    });
   }
 
   // Get All Active Products with User Details
