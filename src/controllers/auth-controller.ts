@@ -43,17 +43,31 @@ export class AuthController {
     const oauthResult = (req as any).user;
     const result = oauthResult ?? { code: 500, status: "error", message: "OAuth authentication failed" };
     
-    // Get redirect URL from cookie (set before OAuth flow) or fall back to environment variable
-    let redirectUrl = req.cookies?.oauth_redirect as string | undefined;
+    // Get redirect URL from state parameter (preserved through OAuth flow)
+    // State is base64 encoded redirect URL
+    let redirectUrl: string | undefined;
+    if (req.query.state && typeof req.query.state === 'string') {
+      try {
+        redirectUrl = Buffer.from(req.query.state, 'base64').toString('utf-8');
+      } catch (e) {
+        console.error('Failed to decode state parameter:', e);
+      }
+    }
     
-    // Clear the cookie after reading
-    if (redirectUrl) {
-      res.clearCookie('oauth_redirect');
+    // Also check cookie as fallback (for backwards compatibility)
+    if (!redirectUrl) {
+      redirectUrl = req.cookies?.oauth_redirect as string | undefined;
+      if (redirectUrl) {
+        res.clearCookie('oauth_redirect');
+      }
     }
     
     // Fall back to environment variable or default
     if (!redirectUrl) {
       redirectUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+      console.log('Using FRONTEND_URL from environment:', redirectUrl);
+    } else {
+      console.log('Using redirect URL from state/cookie:', redirectUrl);
     }
     
     // Normalize redirect URL - remove trailing slash
